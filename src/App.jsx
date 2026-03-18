@@ -24,6 +24,7 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return localStorage.getItem('pedro-car-auth') === 'true';
   });
+  const [loading, setLoading] = useState(true); // New loading state
   const [activeTab, setActiveTab] = useState('dashboard');
   const [triggerNewAction, setTriggerNewAction] = useState(false);
 
@@ -45,7 +46,10 @@ export default function App() {
 
   // Sync Real-time com Firebase
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
 
     const qInventory = query(collection(db, 'inventory'), orderBy('name'));
     const qServices = query(collection(db, 'services'), orderBy('date', 'desc'));
@@ -79,6 +83,9 @@ export default function App() {
       },
       (error) => console.error("Erro no listener de transações:", error)
     );
+
+    // After listeners are set up, consider loading done
+    setLoading(false);
 
     return () => {
       unsubInventory();
@@ -123,6 +130,14 @@ export default function App() {
 
   if (!isAuthenticated) {
     return <LoginView onLogin={handleLogin} />;
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-xl font-bold">Carregando...</p>
+      </div>
+    );
   }
 
   return (
