@@ -78,25 +78,35 @@ export default function App() {
 
   const activeVehicles = useMemo(() => {
     const vMap = new Map();
+    if (!Array.isArray(services)) return [];
+    
     // Adiciona veículos das ordens de serviço
     services.forEach(s => {
-      if (s.plate && !vMap.has(s.plate)) {
-        vMap.set(s.plate, { id: `sv-${s.id}`, brand: '', model: s.car, owner: s.client, cpf: s.cpf, plate: s.plate, year: 'N/I', evaluation: 'Veículo em atendimento.', historyIds: [] });
+      if (s && s.plate && !vMap.has(s.plate)) {
+        vMap.set(s.plate, { id: `sv-${s.id}`, brand: '', model: s.car || 'Modelo N/I', owner: s.client || 'Cliente N/I', cpf: s.cpf || '', plate: s.plate, year: s.year || 'N/I', evaluation: s.evaluation || 'Veículo em atendimento.', historyIds: [] });
       }
     });
     // Adiciona veículos dos orçamentos
-    budgets.forEach(b => {
-      if (b.plate && !vMap.has(b.plate)) {
-        vMap.set(b.plate, { id: `bg-${b.id}`, brand: '', model: b.car, owner: b.client, cpf: b.cpf, plate: b.plate, year: 'N/I', evaluation: 'Veículo orçado.', historyIds: [] });
-      }
-    });
+    if (Array.isArray(budgets)) {
+      budgets.forEach(b => {
+        if (b && b.plate && !vMap.has(b.plate)) {
+          vMap.set(b.plate, { id: `bg-${b.id}`, brand: '', model: b.car || 'Modelo N/I', owner: b.client || 'Cliente N/I', cpf: b.cpf || '', plate: b.plate, year: b.year || 'N/I', evaluation: b.evaluation || 'Veículo orçado.', historyIds: [] });
+        }
+      });
+    }
     return Array.from(vMap.values());
   }, [services, budgets]);
 
   const stats = useMemo(() => {
-    const totalRev = services.reduce((acc, s) => acc + s.total, 0);
-    const lowStock = inventory.filter(i => i.qty < 5).length;
-    return { totalRev, lowStock, pendentes: services.filter(s => s.status !== 'Finalizado').length + budgets.length };
+    const safeServices = Array.isArray(services) ? services : [];
+    const safeBudgets = Array.isArray(budgets) ? budgets : [];
+    const safeInventory = Array.isArray(inventory) ? inventory : [];
+
+    const totalRev = safeServices.reduce((acc, s) => acc + (Number(s.total) || 0), 0);
+    const lowStock = safeInventory.filter(i => (Number(i.qty) || 0) < 5).length;
+    const pendentes = safeServices.filter(s => s.status !== 'Finalizado').length + safeBudgets.length;
+    
+    return { totalRev, lowStock, pendentes };
   }, [services, inventory, budgets]);
 
   if (!isAuthenticated) {

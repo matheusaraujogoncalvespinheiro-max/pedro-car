@@ -5,8 +5,13 @@ import Button from './ui/Button';
 
 function FinancesView({ transactions }) {
   const stats = useMemo(() => {
-    const income = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
-    const expense = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
+    const safeTransactions = Array.isArray(transactions) ? transactions : [];
+    const income = safeTransactions
+      .filter(t => t.type === 'income')
+      .reduce((acc, t) => acc + (Number(t.amount) || 0), 0);
+    const expense = safeTransactions
+      .filter(t => t.type === 'expense')
+      .reduce((acc, t) => acc + (Number(t.amount) || 0), 0);
     return {
       income,
       expense,

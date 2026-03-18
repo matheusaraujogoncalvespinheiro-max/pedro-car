@@ -111,7 +111,7 @@ function ServicesView({ services, setServices, inventory }) {
              <div className="flex justify-between items-end">
                 <div>
                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Valor do Orçamento</p>
-                   <p className="text-2xl font-black text-red-600">R$ {(s.total || 0).toFixed(2)}</p>
+                   <p className="text-2xl font-black text-red-600">R$ {Number(s.total || 0).toFixed(2)}</p>
                 </div>
                 <div className="text-[10px] font-bold text-slate-400">{s.date}</div>
              </div>
@@ -254,7 +254,7 @@ function ServicesView({ services, setServices, inventory }) {
                               </td>
                               <td className="py-4 px-4 text-center font-mono text-xs">{it.qty}</td>
                               <td className="py-4 px-4 text-right text-slate-500 font-mono text-xs">R$ {(it.price || 0).toFixed(2)}</td>
-                              <td className="py-4 px-4 text-right font-black text-slate-800 font-mono text-sm">R$ {((it.price || 0) * (it.qty || 1)).toFixed(2)}</td>
+                              <td className="py-4 px-4 text-right font-black text-slate-800 font-mono text-sm">R$ {Number((it.price || 0) * (it.qty || 1)).toFixed(2)}</td>
                            </tr>
                          ))
                        ) : (
@@ -282,11 +282,11 @@ function ServicesView({ services, setServices, inventory }) {
                  <div className="w-80 shrink-0 bg-slate-50 p-6 rounded-xl border border-slate-100 print:bg-slate-50 print:border print:border-slate-100">
                     <div className="flex justify-between items-center text-sm font-bold text-slate-500 mb-2">
                        <span>Total Bruto</span>
-                       <span className="font-mono">R$ {(printingService.total || 0).toFixed(2)}</span>
+                       <span className="font-mono">R$ {Number(printingService.total || 0).toFixed(2)}</span>
                     </div>
                     <div className="border-t border-slate-200 mt-4 pt-4 flex justify-between items-end">
                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total a Pagar</span>
-                       <span className="text-2xl font-black text-rose-600 font-mono">R$ {(printingService.total || 0).toFixed(2)}</span>
+                       <span className="text-2xl font-black text-rose-600 font-mono">R$ {Number(printingService.total || 0).toFixed(2)}</span>
                     </div>
                  </div>
               </div>
