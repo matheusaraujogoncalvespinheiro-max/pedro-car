@@ -44,7 +44,7 @@ function FinancesView({ transactions }) {
              <span className="text-[10px] font-black uppercase text-emerald-600 tracking-widest bg-emerald-100 px-2 py-1 rounded">Entradas</span>
           </div>
           <p className="text-sm font-black text-slate-400 mb-1">Total de Receitas</p>
-          <h4 className="text-3xl font-black text-emerald-600">R$ {(stats.income || 0).toFixed(2)}</h4>
+          <h4 className="text-3xl font-black text-emerald-600">R$ {Number(stats.income || 0).toFixed(2)}</h4>
         </Card>
 
         <Card className="p-6 bg-slate-50 border-red-100 border-b-4 border-b-red-600 group">
@@ -53,7 +53,7 @@ function FinancesView({ transactions }) {
              <span className="text-[10px] font-black uppercase text-red-600 tracking-widest bg-red-100 px-2 py-1 rounded">Saídas</span>
           </div>
           <p className="text-sm font-black text-slate-400 mb-1">Total de Despesas / Custos</p>
-          <h4 className="text-3xl font-black text-red-600">R$ {(stats.expense || 0).toFixed(2)}</h4>
+          <h4 className="text-3xl font-black text-red-600">R$ {Number(stats.expense || 0).toFixed(2)}</h4>
         </Card>
 
         <Card className="p-6 bg-black text-white shadow-xl shadow-black/20 group">
@@ -62,7 +62,7 @@ function FinancesView({ transactions }) {
              <span className="text-[10px] font-black uppercase text-zinc-400 tracking-widest border border-zinc-800 px-2 py-1 rounded">Saldo Líquido</span>
           </div>
           <p className="text-sm font-black text-zinc-500 mb-1">Balanço do Mês</p>
-          <h4 className="text-3xl font-black text-white">R$ {(stats.balance || 0).toFixed(2)}</h4>
+          <h4 className="text-3xl font-black text-white">R$ {Number(stats.balance || 0).toFixed(2)}</h4>
         </Card>
       </div>
 

@@ -136,7 +136,7 @@ function VehiclesView({ vehicles, services = [], budgets = [] }) {
                                   {item.items.map((it, iIdx) => (
                                     <li key={iIdx} className="text-xs text-slate-600 flex justify-between">
                                       <span><span className="font-bold text-slate-400 mr-1">{it.qty || 1}x</span> {it.description}</span>
-                                      <span className="font-mono text-slate-400">R$ {((it.price || 0) * (it.qty || 1)).toFixed(2)}</span>
+                                      <span className="font-mono text-slate-400">R$ {Number((it.price || 0) * (it.qty || 1)).toFixed(2)}</span>
                                     </li>
                                   ))}
                                 </ul>
