@@ -67,7 +67,7 @@ function ServicesView({ services, setServices, inventory }) {
     }
     
     // Texto pré-definido para notificar que o carro está pronto
-    const text = encodeURIComponent(`Olá ${s.client}! 👋\n\nQueria te avisar que o seu carro (*${s.car} - ${s.plate}*) já está pronto e liberado aqui na *Oficina Pedro Car*.\n\nO valor total do serviço ficou em *R$ ${(s.total || 0).toFixed(2)}*.\n\nJá pode vir buscar! Qualquer dúvida, estamos à disposição. 🚗💨`);
+    const text = encodeURIComponent(`Olá ${s.client}! 👋\n\nQueria te avisar que o seu carro (*${s.car} - ${s.plate}*) já está pronto e liberado aqui na *Oficina Pedro Car*.\n\nO valor total do serviço ficou em *R$ ${Number(s.total || 0).toFixed(2)}*.\n\nJá pode vir buscar! Qualquer dúvida, estamos à disposição. 🚗💨`);
     
     // Abre em nova aba
     window.open(`https://wa.me/${wppNumber}?text=${text}`, '_blank');
@@ -254,7 +254,7 @@ function ServicesView({ services, setServices, inventory }) {
                                 {it.type === 'product' && <span className="text-[10px] bg-rose-100 text-rose-700 font-black px-1.5 py-0.5 rounded ml-2 align-middle">PEÇA</span>}
                               </td>
                               <td className="py-4 px-4 text-center font-mono text-xs">{it.qty}</td>
-                              <td className="py-4 px-4 text-right text-slate-500 font-mono text-xs">R$ {(it.price || 0).toFixed(2)}</td>
+                              <td className="py-4 px-4 text-right text-slate-500 font-mono text-xs">R$ {Number(it.price || 0).toFixed(2)}</td>
                               <td className="py-4 px-4 text-right font-black text-slate-800 font-mono text-sm">R$ {Number((it.price || 0) * (it.qty || 1)).toFixed(2)}</td>
                            </tr>
                          ))

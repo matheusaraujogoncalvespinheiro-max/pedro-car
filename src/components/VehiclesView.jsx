@@ -124,7 +124,7 @@ function VehiclesView({ vehicles, services = [], budgets = [] }) {
                                </div>
                                <div className="text-right">
                                   <p className="text-[10px] font-black text-slate-400 uppercase">Valor</p>
-                                  <p className="font-bold font-mono text-slate-800">R$ {(item.total || 0).toFixed(2)}</p>
+                                  <p className="font-bold font-mono text-slate-800">R$ {Number(item.total || 0).toFixed(2)}</p>
                                </div>
                             </div>
                             
