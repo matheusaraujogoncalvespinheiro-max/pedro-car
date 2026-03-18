@@ -10,7 +10,7 @@ function DashboardView({ stats, services, inventory }) {
         <Card className="p-6 bg-black text-white border-none shadow-xl">
           <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-1">Receita Mensal</p>
           <div className="flex items-center justify-between">
-            <h3 className="text-3xl font-black text-red-600">R$ {(stats.totalRev || 0).toFixed(2)}</h3>
+            <h3 className="text-3xl font-black text-red-600">R$ {Number(stats.totalRev || 0).toFixed(2)}</h3>
             <TrendingUp className="text-zinc-700" size={32} />
           </div>
         </Card>
