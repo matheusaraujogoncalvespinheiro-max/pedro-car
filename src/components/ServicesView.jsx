@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { Printer, ChevronRight, Plus, CheckCircle2, MessageCircle } from 'lucide-react';
 import { db } from '../firebase';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';

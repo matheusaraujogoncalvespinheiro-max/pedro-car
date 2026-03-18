@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { Search, Plus, Edit3, Trash2, X, AlertTriangle } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
