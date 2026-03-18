@@ -154,7 +154,7 @@ function BudgetsView({ budgets, setBudgets, inventory, setInventory, services, s
         cpf: newBudget.cpf,
         phone: newBudget.phone,
         car: newBudget.car,
-        plate: newBudget.plate.toUpperCase(),
+        plate: (newBudget.plate || '').toUpperCase(),
         km: newBudget.km.replace(/\D/g, ''),
         description: items.map(i => i.description).join(', '),
         items: items.map(i => ({...i, price: parseFloat(i.price) || 0, qty: parseInt(i.qty) || 1})),

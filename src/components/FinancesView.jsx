@@ -100,7 +100,7 @@ function FinancesView({ transactions }) {
                   </span>
                 </td>
                 <td className={`px-6 py-4 text-right font-black ${t.type === 'income' ? 'text-emerald-600' : 'text-red-600'}`}>
-                  {t.type === 'income' ? '+' : '-'} R$ {(t.amount || 0).toFixed(2)}
+                  {t.type === 'income' ? '+' : '-'} R$ {Number(t.amount || 0).toFixed(2)}
                 </td>
               </tr>
             ))}
