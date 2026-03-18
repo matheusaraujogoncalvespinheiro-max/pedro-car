@@ -52,21 +52,33 @@ export default function App() {
     const qBudgets = query(collection(db, 'budgets'), orderBy('date', 'desc'));
     const qTransactions = query(collection(db, 'transactions'), orderBy('date', 'desc'));
 
-    const unsubInventory = onSnapshot(qInventory, (snapshot) => {
-      setInventory(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
+    const unsubInventory = onSnapshot(qInventory, 
+      (snapshot) => {
+        setInventory(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      },
+      (error) => console.error("Erro no listener de inventário:", error)
+    );
 
-    const unsubServices = onSnapshot(qServices, (snapshot) => {
-      setServices(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
+    const unsubServices = onSnapshot(qServices, 
+      (snapshot) => {
+        setServices(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      },
+      (error) => console.error("Erro no listener de serviços:", error)
+    );
 
-    const unsubBudgets = onSnapshot(qBudgets, (snapshot) => {
-      setBudgets(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
+    const unsubBudgets = onSnapshot(qBudgets, 
+      (snapshot) => {
+        setBudgets(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      },
+      (error) => console.error("Erro no listener de orçamentos:", error)
+    );
 
-    const unsubTransactions = onSnapshot(qTransactions, (snapshot) => {
-      setTransactions(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
+    const unsubTransactions = onSnapshot(qTransactions, 
+      (snapshot) => {
+        setTransactions(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      },
+      (error) => console.error("Erro no listener de transações:", error)
+    );
 
     return () => {
       unsubInventory();
@@ -132,8 +144,12 @@ export default function App() {
           ].map(item => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg font-bold text-sm transition-all ${
+              type="button"
+              onClick={() => {
+                setActiveTab(item.id);
+                setTriggerNewAction(false);
+              }}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg font-bold text-sm transition-all cursor-pointer relative z-[60] ${
                 activeTab === item.id 
                 ? 'bg-red-600 text-white shadow-lg shadow-red-900/40' 
                 : 'text-zinc-400 hover:bg-zinc-900 hover:text-white'
