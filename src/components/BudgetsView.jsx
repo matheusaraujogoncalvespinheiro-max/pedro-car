@@ -1,3 +1,4 @@
+import React, { useState, useMemo, useEffect } from 'react';
 import { Printer, ChevronRight, Plus, CalendarClock, X, Trash2, Search, CheckCircle2 } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
