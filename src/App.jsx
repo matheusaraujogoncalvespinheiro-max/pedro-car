@@ -14,12 +14,26 @@ import ServicesView from './components/ServicesView';
 import VehiclesView from './components/VehiclesView';
 import FinancesView from './components/FinancesView';
 import BudgetsView from './components/BudgetsView';
+import LoginView from './components/LoginView';
 import Button from './components/ui/Button';
-import Card from './components/ui/Card';
+import Card from './ui/Card';
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('pedro-car-auth') === 'true';
+  });
   const [activeTab, setActiveTab] = useState('dashboard');
   const [triggerNewAction, setTriggerNewAction] = useState(false);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+    localStorage.setItem('pedro-car-auth', 'true');
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem('pedro-car-auth');
+  };
   
   // Estados Globais (Mock Data)
   const [inventory, setInventory] = useState([
@@ -78,6 +92,10 @@ export default function App() {
     return { totalRev, lowStock, pendentes: services.filter(s => s.status !== 'Finalizado').length + budgets.length };
   }, [services, inventory, budgets]);
 
+  if (!isAuthenticated) {
+    return <LoginView onLogin={handleLogin} />;
+  }
+
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900">
       {/* Sidebar Lateral */}
@@ -111,12 +129,20 @@ export default function App() {
         </nav>
         
         <div className="p-6 border-t border-zinc-900">
-          <div className="flex items-center gap-3 bg-zinc-900 p-3 rounded-xl">
-             <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center font-bold">P</div>
-             <div>
-                <p className="text-xs font-bold">Pedro Admin</p>
-                <p className="text-[10px] text-zinc-500">Oficina Pedro Car</p>
-             </div>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-3 bg-zinc-900 p-3 rounded-xl">
+               <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center font-bold text-white">P</div>
+               <div>
+                  <p className="text-xs font-bold">Pedro Admin</p>
+                  <p className="text-[10px] text-zinc-500">Oficina Pedro Car</p>
+               </div>
+            </div>
+            <button 
+              onClick={handleLogout}
+              className="w-full py-2 text-[10px] font-black uppercase tracking-widest text-zinc-600 hover:text-red-500 transition-colors"
+            >
+              Sair do Sistema
+            </button>
           </div>
         </div>
       </aside>
