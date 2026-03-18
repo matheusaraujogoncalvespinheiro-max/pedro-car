@@ -25,10 +25,10 @@ function InventoryView({ inventory, setInventory }) {
     const newQty = parseInt(newItem.qty, 10) || 0;
     const newPrice = parseFloat(newItem.price) || 0;
     
-    // Procura se já existe uma peça com o mesmo SKU ou o mesmo Nome Exato
+    // Procura se já existe uma peça com o mesmo SKU ou o mesmo Nome Exato (com trava contra undefined)
     const existingItem = inventory.find(i => 
-      i.sku.toUpperCase() === newItem.sku.toUpperCase() || 
-      i.name.toUpperCase() === newItem.name.toUpperCase()
+      ((i.sku || '').toUpperCase() === (newItem.sku || '').toUpperCase()) || 
+      ((i.name || '').toUpperCase() === (newItem.name || '').toUpperCase())
     );
 
     try {
@@ -36,8 +36,8 @@ function InventoryView({ inventory, setInventory }) {
         // Se já existe, atualiza a quantidade (soma) e o preço (substitui) no Firestore
         const itemRef = doc(db, 'inventory', existingItem.id);
         await updateDoc(itemRef, {
-          qty: existingItem.qty + newQty,
-          price: newPrice > 0 ? newPrice : existingItem.price,
+          qty: (Number(existingItem.qty) || 0) + newQty,
+          price: newPrice > 0 ? newPrice : (Number(existingItem.price) || 0),
           updatedAt: serverTimestamp()
         });
       } else {

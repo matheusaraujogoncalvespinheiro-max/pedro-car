@@ -107,9 +107,10 @@ function BudgetsView({ budgets, setBudgets, inventory, setInventory, services, s
   // Filtra inventário para o dropdown
   const filteredInventory = useMemo(() => {
     if (!searchQuery) return [];
+    const query = searchQuery.toLowerCase();
     return inventory.filter(p => 
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      p.sku.toLowerCase().includes(searchQuery.toLowerCase())
+      (p.name || '').toLowerCase().includes(query) || 
+      (p.sku || '').toLowerCase().includes(query)
     );
   }, [searchQuery, inventory]);
 
