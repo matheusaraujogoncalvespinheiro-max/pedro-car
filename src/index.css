@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media print {
+  @page {
+    margin: 0;
+  }
+  html, body {
+    margin: 0.5cm;
+    height: auto !important;
+    overflow: visible !important;
+  }
+}
