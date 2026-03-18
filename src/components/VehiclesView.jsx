@@ -11,8 +11,8 @@ function VehiclesView({ vehicles, services = [], budgets = [] }) {
     
     // Sort combined by date string simply (assuming DD/MM/YYYY)
     return [...sList, ...bList].sort((a, b) => {
-      const da = a.date.split('/').reverse().join('');
-      const db = b.date.split('/').reverse().join('');
+      const da = (a.date || '').split('/').reverse().join('') || '00000000';
+      const db = (b.date || '').split('/').reverse().join('') || '00000000';
       return db.localeCompare(da);
     });
   };
@@ -124,7 +124,7 @@ function VehiclesView({ vehicles, services = [], budgets = [] }) {
                                </div>
                                <div className="text-right">
                                   <p className="text-[10px] font-black text-slate-400 uppercase">Valor</p>
-                                  <p className="font-bold font-mono text-slate-800">R$ {item.total.toFixed(2)}</p>
+                                  <p className="font-bold font-mono text-slate-800">R$ {(item.total || 0).toFixed(2)}</p>
                                </div>
                             </div>
                             
@@ -135,8 +135,8 @@ function VehiclesView({ vehicles, services = [], budgets = [] }) {
                                 <ul className="space-y-1">
                                   {item.items.map((it, iIdx) => (
                                     <li key={iIdx} className="text-xs text-slate-600 flex justify-between">
-                                      <span><span className="font-bold text-slate-400 mr-1">{it.qty}x</span> {it.description}</span>
-                                      <span className="font-mono text-slate-400">R$ {(it.price * it.qty).toFixed(2)}</span>
+                                      <span><span className="font-bold text-slate-400 mr-1">{it.qty || 1}x</span> {it.description}</span>
+                                      <span className="font-mono text-slate-400">R$ {((it.price || 0) * (it.qty || 1)).toFixed(2)}</span>
                                     </li>
                                   ))}
                                 </ul>

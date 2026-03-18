@@ -51,7 +51,7 @@ function ServicesView({ services, setServices, inventory }) {
     }
     
     // Texto pré-definido para notificar que o carro está pronto
-    const text = encodeURIComponent(`Olá ${s.client}! 👋\n\nQueria te avisar que o seu carro (*${s.car} - ${s.plate}*) já está pronto e liberado aqui na *Oficina Pedro Car*.\n\nO valor total do serviço ficou em *R$ ${s.total.toFixed(2)}*.\n\nJá pode vir buscar! Qualquer dúvida, estamos à disposição. 🚗💨`);
+    const text = encodeURIComponent(`Olá ${s.client}! 👋\n\nQueria te avisar que o seu carro (*${s.car} - ${s.plate}*) já está pronto e liberado aqui na *Oficina Pedro Car*.\n\nO valor total do serviço ficou em *R$ ${(s.total || 0).toFixed(2)}*.\n\nJá pode vir buscar! Qualquer dúvida, estamos à disposição. 🚗💨`);
     
     // Abre em nova aba
     window.open(`https://wa.me/${wppNumber}?text=${text}`, '_blank');
@@ -96,7 +96,7 @@ function ServicesView({ services, setServices, inventory }) {
              <div className="flex justify-between items-end">
                 <div>
                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Valor do Orçamento</p>
-                   <p className="text-2xl font-black text-red-600">R$ {s.total.toFixed(2)}</p>
+                   <p className="text-2xl font-black text-red-600">R$ {(s.total || 0).toFixed(2)}</p>
                 </div>
                 <div className="text-[10px] font-bold text-slate-400">{s.date}</div>
              </div>
@@ -267,11 +267,11 @@ function ServicesView({ services, setServices, inventory }) {
                  <div className="w-80 shrink-0 bg-slate-50 p-6 rounded-xl border border-slate-100 print:bg-slate-50 print:border print:border-slate-100">
                     <div className="flex justify-between items-center text-sm font-bold text-slate-500 mb-2">
                        <span>Total Bruto</span>
-                       <span className="font-mono">R$ {printingService.total.toFixed(2)}</span>
+                       <span className="font-mono">R$ {(printingService.total || 0).toFixed(2)}</span>
                     </div>
                     <div className="border-t border-slate-200 mt-4 pt-4 flex justify-between items-end">
                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total a Pagar</span>
-                       <span className="text-2xl font-black text-rose-600 font-mono">R$ {printingService.total.toFixed(2)}</span>
+                       <span className="text-2xl font-black text-rose-600 font-mono">R$ {(printingService.total || 0).toFixed(2)}</span>
                     </div>
                  </div>
               </div>

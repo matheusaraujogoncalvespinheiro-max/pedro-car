@@ -239,9 +239,9 @@ function BudgetsView({ budgets, setBudgets, inventory, setInventory, services, s
                          <span className={`truncate ${item.type === 'product' ? 'text-amber-600 font-bold' : 'text-slate-600'}`}>
                            {item.type === 'product' ? `📦 ${item.description}` : `🔧 ${item.description}`}
                          </span>
-                         <span className="font-mono text-[10px] text-slate-400 whitespace-nowrap">
-                           {item.qty} x {(item.price || 0).toFixed(2)}
-                         </span>
+                          <span className="font-mono text-[10px] text-slate-400 whitespace-nowrap">
+                            {item.qty} x {(item.price || 0).toFixed(2)}
+                          </span>
                       </div>
                     ))
                   ) : (
@@ -251,9 +251,9 @@ function BudgetsView({ budgets, setBudgets, inventory, setInventory, services, s
 
                <div className="flex justify-between items-end mt-auto">
                   <div>
-                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Valor Projetado</p>
-                     <p className="text-2xl font-black text-amber-600">R$ {b.total.toFixed(2)}</p>
-                  </div>
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Valor Projetado</p>
+                   <p className="text-2xl font-black text-amber-600">R$ {(b.total || 0).toFixed(2)}</p>
+                </div>
                   <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400">
                       <CalendarClock size={12} /> {b.date}
                   </div>
@@ -455,9 +455,9 @@ function BudgetsView({ budgets, setBudgets, inventory, setInventory, services, s
               {/* Rodapé fixo com total e botões */}
               <div className="bg-white border-t border-slate-200 p-6 flex justify-between items-center shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
                 <div>
-                  <p className="text-[10px] font-black uppercase text-slate-400 mb-0.5">Total Calculado</p>
-                  <p className="text-3xl font-black text-amber-600">R$ {totalBudget.toFixed(2)}</p>
-                </div>
+                <p className="text-[10px] font-black uppercase text-slate-400 mb-0.5">Total Calculado</p>
+                <p className="text-3xl font-black text-amber-600">R$ {(totalBudget || 0).toFixed(2)}</p>
+              </div>
                 <div className="flex gap-3">
                   <Button variant="outline" type="button" onClick={() => setIsModalOpen(false)}>Cancelar</Button>
                   <button type="submit" className="px-6 py-3 rounded-lg font-black transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wider bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-900/20">
@@ -561,16 +561,16 @@ function BudgetsView({ budgets, setBudgets, inventory, setInventory, services, s
                  </div>
 
                  {/* Total Calculation */}
-                 <div className="w-80 shrink-0 bg-slate-50 p-6 rounded-xl border border-slate-100 print:bg-slate-50 print:border print:border-slate-100">
-                    <div className="flex justify-between items-center text-sm font-bold text-slate-500 mb-2">
-                       <span>Soma Base</span>
-                       <span className="font-mono">R$ {printingBudget.total.toFixed(2)}</span>
-                    </div>
-                    <div className="border-t border-slate-200 mt-4 pt-4 flex justify-between items-end">
-                       <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total do Orçamento</span>
-                       <span className="text-2xl font-black text-amber-600 font-mono">R$ {printingBudget.total.toFixed(2)}</span>
-                    </div>
-                 </div>
+                  <div className="w-80 shrink-0 bg-slate-50 p-6 rounded-xl border border-slate-100 print:bg-slate-50 print:border print:border-slate-100">
+                     <div className="flex justify-between items-center text-sm font-bold text-slate-500 mb-2">
+                        <span>Soma Base</span>
+                        <span className="font-mono">R$ {(printingBudget.total || 0).toFixed(2)}</span>
+                     </div>
+                     <div className="border-t border-slate-200 mt-4 pt-4 flex justify-between items-end">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total do Orçamento</span>
+                        <span className="text-2xl font-black text-amber-600 font-mono">R$ {(printingBudget.total || 0).toFixed(2)}</span>
+                     </div>
+                  </div>
               </div>
            </div>
 

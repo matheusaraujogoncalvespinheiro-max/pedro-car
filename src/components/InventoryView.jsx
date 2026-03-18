@@ -109,7 +109,7 @@ function InventoryView({ inventory, setInventory }) {
                 <td className="px-8 py-4 text-center">
                   <span className={`font-black ${i.qty < 5 ? 'text-red-600 underline' : 'text-slate-700'}`}>{i.qty}</span>
                 </td>
-                <td className="px-8 py-4 font-black text-red-600">R$ {i.price.toFixed(2)}</td>
+                <td className="px-8 py-4 font-black text-red-600">R$ {(i.price || 0).toFixed(2)}</td>
                 <td className="px-8 py-4 text-right">
                   <div className="flex justify-end gap-2">
                     <button className="p-2 text-slate-400 hover:text-black transition-all"><Edit3 size={16} /></button>
