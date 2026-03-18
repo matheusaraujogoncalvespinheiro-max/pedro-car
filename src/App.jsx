@@ -16,7 +16,7 @@ import FinancesView from './components/FinancesView';
 import BudgetsView from './components/BudgetsView';
 import LoginView from './components/LoginView';
 import Button from './components/ui/Button';
-import Card from './ui/Card';
+import Card from './components/ui/Card';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
