@@ -1,5 +1,6 @@
-import React, { useState, useMemo, useEffect } from 'react';
 import { Printer, ChevronRight, Plus, CalendarClock, X, Trash2, Search, CheckCircle2 } from 'lucide-react';
+import { db } from '../firebase';
+import { collection, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 import Card from './ui/Card';
 import Badge from './ui/Badge';
 import Button from './ui/Button';
@@ -138,68 +139,66 @@ function BudgetsView({ budgets, setBudgets, inventory, setInventory, services, s
 
   const totalBudget = items.reduce((acc, curr) => acc + ((parseFloat(curr.price) || 0) * (parseInt(curr.qty) || 1)), 0);
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     if(items.length === 0) return alert('Adicione pelo menos um item ao orçamento.');
 
-    const newId = budgets.length > 0 ? Math.max(...budgets.map(b => b.id)) + 1 : 1;
     const today = new Date();
     const formattedDate = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`;
 
-    setBudgets([
-      ...budgets,
-      {
-        id: newId,
+    try {
+      await addDoc(collection(db, 'budgets'), {
         client: newBudget.client,
         cpf: newBudget.cpf,
         phone: newBudget.phone,
         car: newBudget.car,
         plate: newBudget.plate.toUpperCase(),
-        km: newBudget.km.replace(/\D/g, ''), // Retira o ponto e salva só os números no histórico
-        description: items.map(i => i.description).join(', '), // Resumo pro card antigo
+        km: newBudget.km.replace(/\D/g, ''),
+        description: items.map(i => i.description).join(', '),
         items: items.map(i => ({...i, price: parseFloat(i.price) || 0, qty: parseInt(i.qty) || 1})),
         total: totalBudget,
         status: 'Pendente',
-        date: formattedDate
-      }
-    ]);
-    
-    setIsModalOpen(false);
-    setNewBudget({ client: '', cpf: '', phone: '', car: '', plate: '', km: '' });
-    setItems([{ id: 1, type: 'service', description: '', price: '', qty: 1, sku: null }]);
+        date: formattedDate,
+        createdAt: serverTimestamp()
+      });
+      
+      setIsModalOpen(false);
+      setNewBudget({ client: '', cpf: '', phone: '', car: '', plate: '', km: '' });
+      setItems([{ id: 1, type: 'service', description: '', price: '', qty: 1, sku: null }]);
+    } catch (err) {
+      console.error("Erro ao salvar orçamento:", err);
+    }
   };
 
-  const approveBudget = (budget) => {
-    // 1. Descontar os itens de produto do estoque global
-    let updatedInventory = [...inventory];
-    
-    budget.items.forEach(budgetItem => {
-      if (budgetItem.type === 'product' && budgetItem.sku) {
-        const invIndex = updatedInventory.findIndex(i => i.sku === budgetItem.sku);
-        if (invIndex !== -1) {
-          updatedInventory[invIndex] = {
-            ...updatedInventory[invIndex],
-            qty: Math.max(0, updatedInventory[invIndex].qty - budgetItem.qty) // Evita ficar negativo, se for o caso
-          };
+  const approveBudget = async (budget) => {
+    try {
+      // 1. Descontar os itens de produto do estoque no Firestore
+      for (const budgetItem of budget.items) {
+        if (budgetItem.type === 'product' && budgetItem.sku) {
+          const invItem = inventory.find(i => i.sku === budgetItem.sku);
+          if (invItem) {
+            const invRef = doc(db, 'inventory', invItem.id);
+            await updateDoc(invRef, {
+              qty: Math.max(0, invItem.qty - budgetItem.qty),
+              updatedAt: serverTimestamp()
+            });
+          }
         }
       }
-    });
 
-    setInventory(updatedInventory);
+      // 2. Criar uma OS nos 'services' no Firestore
+      const { id, ...budgetData } = budget; // Remove o ID antigo do orçamento
+      await addDoc(collection(db, 'services'), {
+        ...budgetData,
+        status: 'Em Execução',
+        createdAt: serverTimestamp()
+      });
 
-    // 2. Criar uma OS nos 'services'
-    const newServiceId = services.length > 0 ? Math.max(...services.map(s => s.id)) + 1 : 1;
-    setServices([
-      ...services,
-      {
-        ...budget,
-        id: newServiceId,
-        status: 'Em Execução', // Muda status da OS recém criada
-      }
-    ]);
-
-    // 3. Remover o orçamento daqui (ou mudar pra aprovado se preferir manter histórico)
-    setBudgets(budgets.filter(b => b.id !== budget.id));
+      // 3. Remover o orçamento do Firestore
+      await deleteDoc(doc(db, 'budgets', budget.id));
+    } catch (err) {
+      console.error("Erro ao aprovar orçamento:", err);
+    }
   };
 
 

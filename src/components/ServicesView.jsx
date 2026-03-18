@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
 import { Printer, ChevronRight, Plus, CheckCircle2, MessageCircle } from 'lucide-react';
+import { db } from '../firebase';
+import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import Card from './ui/Card';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
@@ -8,33 +9,47 @@ function ServicesView({ services, setServices, inventory }) {
   const [printingService, setPrintingService] = useState(null);
   const [isEmittingNFE, setIsEmittingNFE] = useState(false);
 
-  const handleFinishService = (id) => {
-    setServices(services.map(s => 
-      s.id === id ? { ...s, status: 'Finalizado' } : s
-    ));
+  const handleFinishService = async (id) => {
+    try {
+      const serviceRef = doc(db, 'services', id);
+      await updateDoc(serviceRef, {
+        status: 'Finalizado',
+        updatedAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error("Erro ao finalizar serviço:", err);
+    }
   };
 
   const handleEmitNFE = () => {
     setIsEmittingNFE(true);
     
     // Simula comunicação com a SEFAZ
-    setTimeout(() => {
+    setTimeout(async () => {
       const today = new Date();
       
       // Gera dados fake de Sefaz
-      const updatedService = { 
-        ...printingService, 
-        nfe: {
-          accessKey: '1723 1000 0000 0000 1234 5500 1000 0000 1234 5678 9012', // 44 digitos + espaços p layout
-          protocol: `117${Math.floor(Math.random() * 100000000000)}`,
-          date: today.toLocaleString('pt-BR'),
-          status: 'AUTORIZADO O USO DA NF-E'
-        } 
+      const nfeData = {
+        accessKey: '1723 1000 0000 0000 1234 5500 1000 0000 1234 5678 9012', 
+        protocol: `117${Math.floor(Math.random() * 100000000000)}`,
+        date: today.toLocaleString('pt-BR'),
+        status: 'AUTORIZADO O USO DA NF-E'
       };
 
-      setServices(services.map(s => s.id === printingService.id ? updatedService : s));
-      setPrintingService(updatedService); // Atualiza modal atual
-      setIsEmittingNFE(false);
+      try {
+        const serviceRef = doc(db, 'services', printingService.id);
+        await updateDoc(serviceRef, {
+          nfe: nfeData,
+          updatedAt: serverTimestamp()
+        });
+        
+        // Atualiza modal local via objeto atualizado
+        setPrintingService({ ...printingService, nfe: nfeData });
+        setIsEmittingNFE(false);
+      } catch (err) {
+        console.error("Erro ao emitir NFe no Firestore:", err);
+        setIsEmittingNFE(false);
+      }
     }, 2500);
   };
 

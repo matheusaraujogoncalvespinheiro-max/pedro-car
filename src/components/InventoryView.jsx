@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
 import { Search, Plus, Edit3, Trash2, X, AlertTriangle } from 'lucide-react';
+import { db } from '../firebase';
+import { collection, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 import Card from './ui/Card';
 import Button from './ui/Button';
 
@@ -18,53 +19,57 @@ function InventoryView({ inventory, setInventory }) {
     qty: ''
   });
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     const newQty = parseInt(newItem.qty, 10) || 0;
     const newPrice = parseFloat(newItem.price) || 0;
     
     // Procura se já existe uma peça com o mesmo SKU ou o mesmo Nome Exato
-    const existingItemIndex = inventory.findIndex(i => 
+    const existingItem = inventory.find(i => 
       i.sku.toUpperCase() === newItem.sku.toUpperCase() || 
       i.name.toUpperCase() === newItem.name.toUpperCase()
     );
 
-    if (existingItemIndex !== -1) {
-      // Se já existe, atualiza a quantidade (soma) e o preço (substitui)
-      const updatedInventory = [...inventory];
-      updatedInventory[existingItemIndex].qty += newQty;
-      if (newPrice > 0) {
-        updatedInventory[existingItemIndex].price = newPrice;
-      }
-      setInventory(updatedInventory);
-    } else {
-      // Se não existe, cria nova peça
-      const newId = inventory.length > 0 ? Math.max(...inventory.map(i => i.id)) + 1 : 1;
-      const finalCategory = newItem.category === 'Outro' ? newItem.customCategory : newItem.category;
-      setInventory([
-        ...inventory,
-        {
-          id: newId,
+    try {
+      if (existingItem) {
+        // Se já existe, atualiza a quantidade (soma) e o preço (substitui) no Firestore
+        const itemRef = doc(db, 'inventory', existingItem.id);
+        await updateDoc(itemRef, {
+          qty: existingItem.qty + newQty,
+          price: newPrice > 0 ? newPrice : existingItem.price,
+          updatedAt: serverTimestamp()
+        });
+      } else {
+        // Se não existe, cria nova peça no Firestore
+        const finalCategory = newItem.category === 'Outro' ? newItem.customCategory : newItem.category;
+        await addDoc(collection(db, 'inventory'), {
           name: newItem.name,
           sku: newItem.sku,
           category: finalCategory || 'Geral',
           price: newPrice,
-          qty: newQty
-        }
-      ]);
+          qty: newQty,
+          createdAt: serverTimestamp()
+        });
+      }
+      setIsModalOpen(false);
+      setNewItem({ name: '', sku: '', category: '', customCategory: '', price: '', qty: '' });
+    } catch (err) {
+      console.error("Erro ao salvar no Firestore:", err);
+      alert("Erro ao salvar. Verifique se o Cloud Firestore está ativo.");
     }
-    
-    setIsModalOpen(false);
-    setNewItem({ name: '', sku: '', category: '', customCategory: '', price: '', qty: '' });
   };
 
-  const attemptDelete = (e) => {
+  const attemptDelete = async (e) => {
     e.preventDefault();
     if (deletePassword === '1234') {
-      setInventory(inventory.filter(item => item.id !== itemToDelete.id));
-      setItemToDelete(null);
-      setDeletePassword('');
-      setDeleteError(false);
+      try {
+        await deleteDoc(doc(db, 'inventory', itemToDelete.id));
+        setItemToDelete(null);
+        setDeletePassword('');
+        setDeleteError(false);
+      } catch (err) {
+        console.error("Erro ao deletar:", err);
+      }
     } else {
       setDeleteError(true);
     }

@@ -1,4 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { db } from './firebase';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { 
   LayoutDashboard, 
   Package, 
@@ -35,39 +37,44 @@ export default function App() {
     localStorage.removeItem('pedro-car-auth');
   };
   
-  // Estados Globais (Mock Data)
-  const [inventory, setInventory] = useState([
-    { id: 1, name: 'Óleo Sintético 5W30', sku: 'OL-5W30', category: 'Lubrificantes', price: 45.90, qty: 12 },
-    { id: 2, name: 'Pastilha de Travão Diant.', sku: 'PT-001', category: 'Travões', price: 120.00, qty: 3 },
-    { id: 3, name: 'Filtro de Ar G-III', sku: 'FA-G3', category: 'Filtros', price: 35.00, qty: 25 },
-  ]);
+  // Estados Globais (Carregados do Firebase)
+  const [inventory, setInventory] = useState([]);
+  const [services, setServices] = useState([]);
+  const [budgets, setBudgets] = useState([]);
+  const [transactions, setTransactions] = useState([]);
 
-  const [services, setServices] = useState([
-    { id: 2, client: 'Maria Santos', car: 'Corolla XEI', plate: 'XYZ-9876', total: 1200.00, status: 'Finalizado', date: '10/10/2023', description: 'Troca de óleo, pastilhas de travão e revisão geral do sistema elétrico.' },
-  ]);
+  // Sync Real-time com Firebase
+  useEffect(() => {
+    if (!isAuthenticated) return;
 
-  const [budgets, setBudgets] = useState([
-    { 
-      id: 1, client: 'João Silva', car: 'Golf GTI', plate: 'ABC-1234', km: '45000', total: 450.00, status: 'Pendente', date: '12/10/2023',
-      items: [
-        { id: 1, type: 'service', description: 'Troca de pastilhas e alinhamento', price: 450.00, qty: 1 }
-      ]
-    },
-    { 
-      id: 2, client: 'Lucas Lima', car: 'Honda Civic', plate: 'DEF-5678', km: '82100', total: 850.00, status: 'Pendente', date: '15/10/2023',
-      items: [
-        { id: 1, type: 'service', description: 'Mão de obra troca de embreagem', price: 500.00, qty: 1 },
-        { id: 2, type: 'product', description: 'Kit Embreagem LUK', price: 350.00, qty: 1, sku: 'LUK-123' }
-      ]
-    }
-  ]);
+    const qInventory = query(collection(db, 'inventory'), orderBy('name'));
+    const qServices = query(collection(db, 'services'), orderBy('date', 'desc'));
+    const qBudgets = query(collection(db, 'budgets'), orderBy('date', 'desc'));
+    const qTransactions = query(collection(db, 'transactions'), orderBy('date', 'desc'));
 
-  const [transactions, setTransactions] = useState([
-    { id: 1, date: '15/10/2023', description: 'Serviço - Corolla XEI (Maria)', category: 'Mão de Obra', type: 'income', amount: 800.00 },
-    { id: 2, date: '14/10/2023', description: 'Compra de Peças - Fornecedor A', category: 'Estoque', type: 'expense', amount: 1250.00 },
-    { id: 3, date: '12/10/2023', description: 'Serviço - Golf GTI (João)', category: 'Peças e Serviço', type: 'income', amount: 450.00 },
-    { id: 4, date: '05/10/2023', description: 'Conta de Luz', category: 'Custos Fixos', type: 'expense', amount: 350.00 },
-  ]);
+    const unsubInventory = onSnapshot(qInventory, (snapshot) => {
+      setInventory(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    });
+
+    const unsubServices = onSnapshot(qServices, (snapshot) => {
+      setServices(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    });
+
+    const unsubBudgets = onSnapshot(qBudgets, (snapshot) => {
+      setBudgets(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    });
+
+    const unsubTransactions = onSnapshot(qTransactions, (snapshot) => {
+      setTransactions(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    });
+
+    return () => {
+      unsubInventory();
+      unsubServices();
+      unsubBudgets();
+      unsubTransactions();
+    };
+  }, [isAuthenticated]);
 
   const activeVehicles = useMemo(() => {
     const vMap = new Map();
