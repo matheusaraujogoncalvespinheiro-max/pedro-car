@@ -8,7 +8,8 @@ import {
   Wrench, 
   Car, 
   Plus,
-  DollarSign
+  DollarSign,
+  Menu
 } from 'lucide-react';
 import DashboardView from './components/DashboardView';
 import InventoryView from './components/InventoryView';
@@ -27,6 +28,7 @@ export default function App() {
   const [loading, setLoading] = useState(true); // New loading state
   const [activeTab, setActiveTab] = useState('dashboard');
   const [triggerNewAction, setTriggerNewAction] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogin = () => {
     setIsAuthenticated(true);
@@ -142,8 +144,18 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900">
+      {/* Mobile top bar */}
+      <header className="md:hidden flex items-center justify-between bg-black text-white p-4 fixed inset-x-0 top-0 z-50">
+        <img src="/logo.png" alt="Pedro Car Logo" className="h-8" />
+        <button type="button" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-white">
+          <Menu size={24} />
+        </button>
+      </header>
+      {mobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setMobileMenuOpen(false)}></div>
+      )}
       {/* Sidebar Lateral */}
-      <aside className="w-64 bg-black text-white fixed inset-y-0 flex flex-col z-50 print:hidden">
+      <aside className={`w-64 bg-black text-white fixed inset-y-0 flex flex-col z-50 transform ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:block`}>
         <div className="p-8 flex items-center justify-center">
           <img src="/logo.png" alt="Pedro Car Logo" className="w-full max-w-[180px] object-contain" />
         </div>
@@ -196,7 +208,7 @@ export default function App() {
       </aside>
 
       {/* Área de Conteúdo */}
-      <main className="flex-1 ml-64 p-10 print:ml-0 print:p-0">
+              <main className="flex-1 ml-0 md:ml-64 p-4 md:p-10 print:ml-0 print:p-0">
         <header className="mb-10 flex justify-between items-end print:hidden">
           <div>
             <h2 className="text-4xl font-black uppercase tracking-tighter italic">
