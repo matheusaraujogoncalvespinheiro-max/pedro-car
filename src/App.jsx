@@ -239,7 +239,7 @@ export default function App() {
         {activeTab === 'finances' && <FinancesView transactions={transactions} />}
         {activeTab === 'inventory' && <InventoryView inventory={inventory} setInventory={setInventory} triggerNew={triggerNewAction} onTriggerComplete={() => setTriggerNewAction(false)} />}
         {activeTab === 'budgets' && <BudgetsView budgets={budgets} setBudgets={setBudgets} inventory={inventory} setInventory={setInventory} services={services} setServices={setServices} triggerNew={triggerNewAction} onTriggerComplete={() => setTriggerNewAction(false)} />}
-        {activeTab === 'services' && <ServicesView services={services} setServices={setServices} inventory={inventory} />}
+        {activeTab === 'services' && <ServicesView services={services} setServices={setServices} inventory={inventory} vehicles={activeVehicles} triggerNew={triggerNewAction} onTriggerComplete={() => setTriggerNewAction(false)} />}
         {activeTab === 'vehicles' && <VehiclesView vehicles={activeVehicles} services={services} budgets={budgets} />}
       </main>
     </div>
