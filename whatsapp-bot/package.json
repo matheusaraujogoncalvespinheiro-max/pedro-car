@@ -1,0 +1,16 @@
+{
+  "name": "pedro-car-bot",
+  "version": "1.0.0",
+  "description": "WhatsApp Chatbot for Pedro Car workshop integrated with Firebase",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^7.0.0-rc13",
+    "qrcode-terminal": "^0.12.0",
+    "firebase": "^10.14.1",
+    "pino": "^9.0.0"
+  }
+}
