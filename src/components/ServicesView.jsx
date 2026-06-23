@@ -281,7 +281,7 @@ function ServicesView({ services, setServices, inventory, vehicles = [], trigger
                 {newService.plate && (
                   <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4 relative opacity-70">
                     <div className="md:col-span-1">
-                      <label className="block text-[10px] font-black uppercase text-slate-400 mb-1">CPF do Cliente</label>
+                      <label className="block text-[10px] font-black uppercase text-slate-400 mb-1">CPF / CNPJ do Cliente</label>
                       <input type="text" readOnly className="w-full border border-slate-200 rounded-lg p-2 text-sm font-bold bg-slate-50 text-slate-500" value={newService.cpf} />
                     </div>
                     <div className="md:col-span-2">
@@ -488,7 +488,7 @@ function ServicesView({ services, setServices, inventory, vehicles = [], trigger
                       <p className="text-[10px] font-black uppercase text-slate-400 mb-1">Destinatário / Cliente</p>
                       <p className="text-xl font-black text-slate-800 uppercase leading-none mb-2">{printingService.client}</p>
                       <div className="inline-block bg-white print:bg-slate-100 border border-slate-200 print:border-none rounded px-3 py-1.5 mt-1">
-                        <span className="text-[10px] font-black text-slate-400 uppercase mr-2">CPF:</span>
+                        <span className="text-[10px] font-black text-slate-400 uppercase mr-2">CPF/CNPJ:</span>
                         <span className="font-mono text-sm font-bold text-slate-800">{printingService.cpf || 'NÃO INFORMADO'}</span>
                       </div>
                    </div>

@@ -90,7 +90,7 @@ function VehiclesView({ vehicles, services = [], budgets = [] }) {
                  <div className="p-2 bg-red-600 rounded-lg text-white"><Car size={24}/></div>
                  <div>
                     <h3 className="font-black italic uppercase tracking-tighter text-xl leading-none">{selectedVehicle.model} <span className="text-sm font-bold text-red-500"> {selectedVehicle.plate}</span></h3>
-                    <p className="text-xs font-bold text-zinc-400 mt-1 uppercase">Proprietário: {selectedVehicle.owner} {selectedVehicle.cpf && `(CPF: ${selectedVehicle.cpf})`}</p>
+                    <p className="text-xs font-bold text-zinc-400 mt-1 uppercase">Proprietário: {selectedVehicle.owner} {selectedVehicle.cpf && `(CPF/CNPJ: ${selectedVehicle.cpf})`}</p>
                  </div>
               </div>
               <button onClick={() => setSelectedVehicle(null)} className="text-zinc-500 hover:text-white transition-all"><X size={20}/></button>

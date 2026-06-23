@@ -29,12 +29,19 @@ function BudgetsView({ budgets, setBudgets, inventory, setInventory, services, s
   });
 
   const formatCPF = (value) => {
-    return value
-      .replace(/\D/g, '')
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d{1,2})/, '$1-$2')
-      .replace(/(-\d{2})\d+?$/, '$1');
+    const digits = value.replace(/\D/g, '');
+    if (digits.length <= 11) {
+      if (digits.length <= 3) return digits;
+      if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+      if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+      return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`;
+    } else {
+      const d = digits.slice(0, 14);
+      if (d.length <= 12) {
+        return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8)}`;
+      }
+      return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8, 12)}-${d.slice(12, 14)}`;
+    }
   };
 
   const formatPhone = (value) => {
@@ -67,9 +74,9 @@ function BudgetsView({ budgets, setBudgets, inventory, setInventory, services, s
     const formattedCpf = formatCPF(e.target.value);
     const numericCpf = formattedCpf.replace(/\D/g, ''); // Para a busca no histórico usamos apensa números ou o formato completo, dependendo de como salvamos.
     
-    // Como os CPFs passados podem estar formatados ou não, vamos buscar pela string contendo só números para garantir
-    if (numericCpf.length === 11) {
-      // Tenta achar em serviços antigos (comparando o CPF numérico)
+    // Como os CPFs/CNPJs passados podem estar formatados ou não, vamos buscar pela string contendo só números para garantir
+    if (numericCpf.length === 11 || numericCpf.length === 14) {
+      // Tenta achar em serviços antigos (comparando o CPF/CNPJ numérico)
       let match = services.slice().reverse().find(s => (s.cpf || '').replace(/\D/g, '') === numericCpf);
       if (!match) {
          match = budgets.slice().reverse().find(b => (b.cpf || '').replace(/\D/g, '') === numericCpf);
@@ -295,8 +302,8 @@ function BudgetsView({ budgets, setBudgets, inventory, setInventory, services, s
                 {/* Info do Veículo / Cliente */}
                 <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4 relative">
                   <div className="md:col-span-1">
-                    <label className="block text-[10px] font-black uppercase text-slate-400 mb-1">CPF do Cliente</label>
-                    <input type="text" maxLength="14" className="w-full border border-slate-200 rounded-lg p-2 text-sm font-bold focus:ring-2 focus:ring-amber-500 outline-none" placeholder="000.000.000-00" value={newBudget.cpf} onChange={handleCpfChange} />
+                    <label className="block text-[10px] font-black uppercase text-slate-400 mb-1">CPF / CNPJ do Cliente</label>
+                    <input type="text" maxLength="18" className="w-full border border-slate-200 rounded-lg p-2 text-sm font-bold focus:ring-2 focus:ring-amber-500 outline-none" placeholder="CPF ou CNPJ" value={newBudget.cpf} onChange={handleCpfChange} />
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Nome do Cliente</label>
@@ -498,7 +505,7 @@ function BudgetsView({ budgets, setBudgets, inventory, setInventory, services, s
                  <div>
                     <p className="text-[10px] font-black uppercase text-slate-400 mb-1">Cliente</p>
                     <p className="text-lg font-black text-slate-800 uppercase">{printingBudget.client}</p>
-                    {printingBudget.cpf && <p className="text-sm font-bold text-slate-500 mt-1">CPF: {printingBudget.cpf}</p>}
+                    {printingBudget.cpf && <p className="text-sm font-bold text-slate-500 mt-1">CPF/CNPJ: {printingBudget.cpf}</p>}
                  </div>
                  <div className="grid grid-cols-3 gap-4">
                     <div>
