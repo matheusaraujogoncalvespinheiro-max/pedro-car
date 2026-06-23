@@ -8,7 +8,6 @@ import Badge from './ui/Badge';
 
 function ServicesView({ services, setServices, inventory, vehicles = [], triggerNew, onTriggerComplete }) {
   const [printingService, setPrintingService] = useState(null);
-  const [isEmittingNFE, setIsEmittingNFE] = useState(false);
 
   // Estados para o Modal de Nova OS
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -127,38 +126,6 @@ function ServicesView({ services, setServices, inventory, vehicles = [], trigger
     }
   };
 
-  const handleEmitNFE = () => {
-    setIsEmittingNFE(true);
-    
-    // Simula comunicação com a SEFAZ
-    setTimeout(async () => {
-      const today = new Date();
-      
-      // Gera dados fake de Sefaz
-      const nfeData = {
-        accessKey: '1723 1000 0000 0000 1234 5500 1000 0000 1234 5678 9012', 
-        protocol: `117${Math.floor(Math.random() * 100000000000)}`,
-        date: today.toLocaleString('pt-BR'),
-        status: 'AUTORIZADO O USO DA NF-E'
-      };
-
-      try {
-        const serviceRef = doc(db, 'services', printingService.id);
-        await updateDoc(serviceRef, {
-          nfe: nfeData,
-          updatedAt: serverTimestamp()
-        });
-        
-        // Atualiza modal local via objeto atualizado
-        setPrintingService({ ...printingService, nfe: nfeData });
-        setIsEmittingNFE(false);
-      } catch (err) {
-        console.error("Erro ao emitir NFe no Firestore:", err);
-        setIsEmittingNFE(false);
-      }
-    }, 2500);
-  };
-
   const handleWhatsAppNotify = (s) => {
     if (!s.phone) {
       alert("O telefone do cliente não foi preenchido neste serviço!");
@@ -238,7 +205,7 @@ function ServicesView({ services, setServices, inventory, vehicles = [], trigger
               onClick={() => setPrintingService(s)}
               className="bg-slate-50 px-6 py-4 flex justify-between items-center group-hover:bg-slate-100 transition-all cursor-pointer mt-auto border-t border-slate-100"
             >
-               <span className="text-xs font-black uppercase text-slate-400">Gerar Nota Fiscal</span>
+               <span className="text-xs font-black uppercase text-slate-400">Imprimir Recibo</span>
                <ChevronRight className="text-slate-300" size={16} />
             </div>
           )}
@@ -459,7 +426,7 @@ function ServicesView({ services, setServices, inventory, vehicles = [], trigger
         </div>
       )}
 
-      {/* Modal de Impressão de Nota Fiscal */}
+      {/* Modal de Impressão de Recibo */}
       {printingService && (
         <div className="fixed inset-0 z-[200] bg-white overflow-y-auto print:static print:inset-auto print:overflow-visible print:block animate-in fade-in duration-300">
            <div className="max-w-3xl mx-auto p-10 print:p-0 print:m-0 print:max-w-full print:w-full relative font-sans text-slate-800 pb-32 print:pb-0 print:mb-0">
@@ -467,7 +434,7 @@ function ServicesView({ services, setServices, inventory, vehicles = [], trigger
               <div className="flex justify-between items-start border-b-2 border-slate-100 pb-8 mb-8">
                  <div className="flex items-center gap-4">
                     <div className="bg-black p-2 rounded-lg">
-                      <img src="/logo.png" alt="Pedro Car" className="w-24 object-contain" />
+                       <img src="/logo.png" alt="Pedro Car" className="w-24 object-contain" />
                     </div>
                     <div>
                        <h2 className="text-xl font-black italic uppercase tracking-tighter">Pedro Car Oficina</h2>
@@ -475,7 +442,7 @@ function ServicesView({ services, setServices, inventory, vehicles = [], trigger
                     </div>
                  </div>
                  <div className="text-right">
-                    <h1 className="text-3xl font-black text-rose-600 italic uppercase">Nota Fiscal</h1>
+                    <h1 className="text-3xl font-black text-rose-600 italic uppercase">Recibo de Serviço</h1>
                     <p className="text-sm font-black text-slate-400 mt-1 uppercase tracking-widest">Nº {String(printingService.id).padStart(4, '0')}</p>
                     <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">OS Data: {printingService.date}</p>
                  </div>
@@ -507,46 +474,12 @@ function ServicesView({ services, setServices, inventory, vehicles = [], trigger
                          <p className="text-[10px] font-black uppercase text-slate-400 mb-0.5">KM Registrado</p>
                          <p className="text-sm font-bold text-slate-600 font-mono">{printingService.km ? printingService.km + ' km' : 'Não Inf.'}</p>
                      </div>
-                     {!printingService.nfe && (
-                       <div>
-                           <p className="text-[10px] font-black uppercase text-slate-400 mb-0.5">Autorização</p>
-                           <p className="text-sm font-bold text-emerald-600">Serviço Autorizado e Concluído</p>
-                       </div>
-                     )}
+                     <div>
+                         <p className="text-[10px] font-black uppercase text-slate-400 mb-0.5">Autorização</p>
+                         <p className="text-sm font-bold text-emerald-600">Serviço Autorizado e Concluído</p>
+                     </div>
                   </div>
               </div>
-
-              {/* Informações Fiscais oficiais SEFAZ-TO */}
-              {printingService.nfe && (
-                <div className="mb-8 p-4 bg-emerald-50 border border-emerald-200 rounded-xl print:border-none print:bg-transparent">
-                   <div className="flex items-center gap-2 text-emerald-700 font-black uppercase text-sm mb-4">
-                      <CheckCircle2 size={18} />
-                      {printingService.nfe.status}
-                   </div>
-                   
-                   <div className="space-y-3">
-                     <div>
-                        <p className="text-[10px] font-black uppercase text-slate-400">Chave de Acesso da NF-e</p>
-                        <p className="font-mono text-sm font-bold tracking-widest text-slate-800 break-all">
-                          {printingService.nfe.accessKey}
-                        </p>
-                     </div>
-                     <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-[10px] font-black uppercase text-slate-400">Protocolo de Autorização</p>
-                          <p className="font-mono text-xs font-bold text-slate-800">{printingService.nfe.protocol}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black uppercase text-slate-400">Data e Hora de Autorização</p>
-                          <p className="font-mono text-xs font-bold text-slate-800">{printingService.nfe.date}</p>
-                        </div>
-                     </div>
-                   </div>
-                   <p className="text-[10px] italic text-slate-500 mt-4 max-w-xl">
-                      Consulta de autenticidade no portal nacional da NF-e www.nfe.fazenda.gov.br/portal ou no site da SEFAZ Autorizadora.
-                   </p>
-                </div>
-              )}
 
               {/* Items Table */}
               <div className="mb-8">
@@ -611,24 +544,8 @@ function ServicesView({ services, setServices, inventory, vehicles = [], trigger
            <div className="fixed bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-200 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] flex justify-center gap-4 print:hidden z-[220]">
               <Button variant="outline" onClick={() => setPrintingService(null)}>Voltar p/ Sistema</Button>
               
-              {!printingService.nfe && (
-                <Button 
-                  variant="primary" 
-                  onClick={handleEmitNFE} 
-                  disabled={isEmittingNFE}
-                  className="bg-emerald-600 hover:bg-emerald-700 border-emerald-600 focus:ring-emerald-600/20"
-                >
-                  {isEmittingNFE ? (
-                    <>
-                      <div className="w-4 h-4 rounded-full border-2 border-t-white border-r-white border-b-white/30 border-l-white/30 animate-spin mr-2"></div>
-                      Transmitindo para SEFAZ-TO...
-                    </>
-                  ) : 'Emitir NF-e (SEFAZ-TO)'}
-                </Button>
-              )}
-              
               <Button variant="primary" icon={Printer} onClick={() => window.print()} className="bg-rose-600 hover:bg-rose-700 border-rose-600 focus:ring-rose-600/20">
-                Imprimir NFs / PDF
+                Imprimir Recibo / PDF
               </Button>
            </div>
         </div>
