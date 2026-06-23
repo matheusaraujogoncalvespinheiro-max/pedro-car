@@ -143,7 +143,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="flex flex-col min-h-screen bg-slate-50 font-sans text-slate-900">
       {/* Mobile top bar */}
       <header className="md:hidden flex items-center justify-between bg-black text-white p-4 fixed inset-x-0 top-0 z-50">
         <img src="/logo.png" alt="Pedro Car Logo" className="h-8" />
@@ -151,11 +151,63 @@ export default function App() {
           <Menu size={24} />
         </button>
       </header>
+
+      {/* Desktop top bar */}
+      <header className="hidden md:flex items-center justify-between bg-black text-white px-8 fixed inset-x-0 top-0 z-50 h-20 border-b border-zinc-900 shadow-lg">
+        <div className="flex items-center gap-8">
+          <img src="/logo.png" alt="Pedro Car Logo" className="h-10 object-contain" />
+          <nav className="flex items-center gap-1">
+            {[
+              { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+              { id: 'finances', label: 'Receitas & Despesas', icon: DollarSign },
+              { id: 'inventory', label: 'Estoque de Peças', icon: Package },
+              { id: 'budgets', label: 'Orçamentos', icon: FileText },
+              { id: 'services', label: 'Ordens de Serviço', icon: Wrench },
+              { id: 'vehicles', label: 'Veículos & Avaliação', icon: Car },
+            ].map(item => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => {
+                  setActiveTab(item.id);
+                  setTriggerNewAction(false);
+                }}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg font-bold text-xs transition-all cursor-pointer relative z-[60] ${
+                  activeTab === item.id 
+                  ? 'bg-red-600 text-white shadow-md shadow-red-900/40' 
+                  : 'text-zinc-400 hover:bg-zinc-900 hover:text-white'
+                }`}
+              >
+                <item.icon size={14} />
+                {item.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 bg-zinc-900 px-3 py-1.5 rounded-xl border border-zinc-800">
+             <div className="w-7 h-7 rounded-full bg-red-600 flex items-center justify-center font-bold text-white text-xs">P</div>
+             <div className="text-left">
+                <p className="text-xs font-bold leading-none">Pedro Admin</p>
+                <p className="text-[9px] text-zinc-500 mt-1 leading-none">Oficina Pedro Car</p>
+             </div>
+          </div>
+          <button 
+            onClick={handleLogout}
+            className="py-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-red-500 transition-colors"
+          >
+            Sair
+          </button>
+        </div>
+      </header>
+
       {mobileMenuOpen && (
         <div className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setMobileMenuOpen(false)}></div>
       )}
-      {/* Sidebar Lateral */}
-      <aside className={`w-64 bg-black text-white fixed inset-y-0 flex flex-col z-50 transform ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:block`}>
+      
+      {/* Sidebar Lateral (Apenas Mobile) */}
+      <aside className={`w-64 bg-black text-white fixed inset-y-0 flex flex-col z-50 transform ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out md:hidden`}>
         <div className="p-8 flex items-center justify-center">
           <img src="/logo.png" alt="Pedro Car Logo" className="w-full max-w-[180px] object-contain" />
         </div>
@@ -208,7 +260,7 @@ export default function App() {
       </aside>
 
       {/* Área de Conteúdo */}
-              <main className="flex-1 ml-0 md:ml-64 p-4 md:p-10 print:ml-0 print:p-0">
+      <main className="flex-1 ml-0 p-4 md:p-10 pt-20 md:pt-28 print:ml-0 print:p-0">
         <header className="mb-10 flex justify-between items-end print:hidden">
           <div>
             <h2 className="text-4xl font-black uppercase tracking-tighter italic">
